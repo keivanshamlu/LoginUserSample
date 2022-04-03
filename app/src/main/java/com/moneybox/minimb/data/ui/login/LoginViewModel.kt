@@ -33,7 +33,7 @@ class LoginViewModel(
 
     val continueButtonEnable = viewState.combine(login) { state, login ->
         state.email.isValidEmail() && state.password.length > 5 && login.isLoading().not()
-    }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun loginButtonClicked() = viewModelScope.launch {
 
@@ -41,7 +41,7 @@ class LoginViewModel(
         repository.login(viewState.value.email, viewState.value.password).collect {
             _login.value = it
             if(it.isSuccess()) it.data?.let { _navigateToAccounts.tryEmit(Event(it)) }
-            if(it.isError()) it.error?.toString()?.let { _error.tryEmit(Event(it)) }
+            if(it.isError()) it.error?.message?.let { _error.tryEmit(Event(it)) }
         }
     }
 

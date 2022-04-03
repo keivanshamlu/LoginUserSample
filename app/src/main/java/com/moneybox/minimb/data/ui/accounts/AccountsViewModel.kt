@@ -31,7 +31,7 @@ class AccountsViewModel(
         _products.emit(Resource.loading())
         repository.investorProducts(token).collect {
             _products.value = it
-            if(it.isError()) it.error?.toString()?.let { _error.tryEmit(Event(it)) }
+            if(it.isError()) it.error?.message?.let { _error.tryEmit(Event(it)) }
         }
     }
 }

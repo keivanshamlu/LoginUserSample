@@ -4,6 +4,8 @@ import com.moneybox.minimb.data.models.login.LoginRequest
 import com.moneybox.minimb.data.models.login.LoginResponse
 import com.moneybox.minimb.data.models.products.AllProductsResponse
 import com.moneybox.minimb.data.networking.ApiMoneyBox
+import com.moneybox.minimb.data.utility.DefaultDispatcherProvider
+import com.moneybox.minimb.data.utility.DispatcherProvider
 import com.moneybox.minimb.data.utility.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -12,7 +14,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class UserRepository(
-    private val service: ApiMoneyBox
+    private val service: ApiMoneyBox,
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) {
 
 
@@ -21,7 +24,7 @@ class UserRepository(
         val data = service.login(LoginRequest(email = email, password = pass))
         emit(Resource.success(data))
     }
-        .flowOn(Dispatchers.IO)
+        .flowOn(dispatchers.io())
         .catch {
 
             emit(Resource.error(it, null))
@@ -33,7 +36,7 @@ class UserRepository(
         val data = service.investorproducts("Bearer $token")
         emit(Resource.success(data))
     }
-        .flowOn(Dispatchers.IO)
+        .flowOn(dispatchers.io())
         .catch {
 
             emit(Resource.error(it, null))
