@@ -28,13 +28,17 @@ class LoginViewModel(
     private val _navigateToAccounts = MutableSharedFlow<Event<LoginResponse>?>(1)
     val navigateToAccounts: SharedFlow<Event<LoginResponse>?> = _navigateToAccounts
 
+    //to show toast error
     private val _error = MutableSharedFlow<Event<String>?>(1)
     val error: SharedFlow<Event<String>?> = _error
 
+    //when email is valid, pass is valid and button is not loading, button is enable
     val continueButtonEnable = viewState.combine(login) { state, login ->
         state.email.isValidEmail() && state.password.length > 5 && login.isLoading().not()
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
+    //called when user click on button, then calls repo and logins
+    // user and then shows error in case of error and navigates user to accounts in case of success
     fun loginButtonClicked() = viewModelScope.launch {
 
         _login.emit(Resource.loading())
